@@ -30,12 +30,16 @@ import subprocess
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+# Load .env from same directory as script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(script_dir, ".env"), override=True)
 
-if os.getenv("ANTHROPIC_BASE_URL"):
-    os.environ.pop("ANTHROPIC_AUTH_TOKEN", None)
+os.environ.setdefault("ANTHROPIC_AUTH_TOKEN", os.getenv("ANTHROPIC_API_KEY", ""))
 
-client = Anthropic(base_url=os.getenv("ANTHROPIC_BASE_URL"))
+client = Anthropic(
+      api_key=os.getenv("ANTHROPIC_AUTH_TOKEN"),
+      base_url=os.getenv("ANTHROPIC_BASE_URL")
+  )
 MODEL = os.environ["MODEL_ID"]
 
 SYSTEM = f"You are a coding agent at {os.getcwd()}. Use bash to solve tasks. Act, don't explain."
